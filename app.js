@@ -1,3 +1,11 @@
+const port = 3003;
+const express = require('express');
+const app = express();
+const path = require('path');
+app.set('view engine', 'ejs');
+app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.urlencoded({ extended: false }));
+
 const readline = require('readline');
 
 const rl = readline.createInterface({
@@ -6,7 +14,7 @@ const rl = readline.createInterface({
 });
 
 var recursiveAsyncReadLine = function () {
-  rl.question('\nHow can I help you?\n', function (answer) {
+  rl.question('\nHow can I help you? (write in lowercase)\n(commands:items|price|order|Most Selling|Sales|Most Sales|order DONE\n', function (answer) {
     if (answer == 'exit') //we need some base case, for recursion
         return rl.close(); //closing RL and returning from function.
     handleInput(answer);
@@ -15,7 +23,6 @@ var recursiveAsyncReadLine = function () {
 };
 
 recursiveAsyncReadLine();
-
 
 var items = [
   {id: 123, name: "Milk", price: 20, quantity: 0, sold: 0},
@@ -69,7 +76,6 @@ var handleInput = function (input) {
       }
   }
 }
-
 
 function restock (items) {
   console.log("The following items need be restocked!")
@@ -214,3 +220,9 @@ function addOrder(itemName, itemQuantity, i) { // assumes correct input
   orderPrice += (items[i].price * itemQuantity);
   totalPrice += (items[i].price * itemQuantity);
 }
+
+app.get('/', (req, res) => {
+  res.render('index.ejs')
+});
+
+app.listen(process.env.PORT || port, () => console.log(`Example app listening on port ${port}!`));
